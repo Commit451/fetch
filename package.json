@@ -1,0 +1,27 @@
+{
+  "name": "fetch",
+  "version": "0.0.1",
+  "description": "The simplest maven server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.15.2",
+    "body-parser": "^1.17.1",
+    "get-folder-size": "^1.0.0",
+    "fs-extra": "^2.1.2"
+  },
+  "engines": {
+    "node": "6.9.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/#!/project/welcome-project"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}
