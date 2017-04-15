@@ -23,8 +23,8 @@ Now, within your Gradle project, you just need to configure a custom maven repo:
 ```
 maven {
   credentials {
-      username "your_username"
-      password "your_password"
+      username 'admin'
+      password 'your_password'
   }
   url "https://yourproject.glitch.me"
 }
