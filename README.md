@@ -34,8 +34,16 @@ We recommend moving the username, password, and url out of the project itself an
 ## Limitataions
 glitch.com limits you to a max of 128 MB of files. You can check how many you are using by visiting `https://yourprojectname.glitch.me/data`
 
+## Extras
+Some extra commands. Beware!
+- https://yourprojectname.glitch.me/data - returns the amount of MB you are using
+- https://yourprojectname.glitch.me/nuke - removes all artifacts. EVERYTHING
 
 Made with [glitch.com](https://glitch.com/)
 -----------------
 
 \ ゜o゜)ノ
+
+## License
+
+fetch is available under the MIT license. See the LICENSE file for more info.
