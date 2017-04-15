@@ -29,7 +29,7 @@ app.get("/data", function (request, response) {
   });
 });
 
-app.get("/nuke", function (request, response) {
+app.post("/nuke", function (request, response) {
     fs.remove(folder, err => {
     if (err) {
       console.error(err)
@@ -44,22 +44,42 @@ app.get("/nuke", function (request, response) {
 //they request the file, we send it
 app.get("*", function (request, response) {
   var path = request.originalUrl;
-  console.log("Got a GET request:" + path);
-  if (fs.existsSync(folder + path)) {
+  console.log("Got a GET request: " + path);
+  
+  // Grab the "Authorization" header.
+  var auth = request.get("authorization");
+
+  // On the first request, the "Authorization" header won't exist, so we'll set a Response
+  // header that prompts the browser to ask for a username and password.
+  if (!auth) {
+    response.set("WWW-Authenticate", "Basic realm=\"Authorization Required\"");
+    // If the user cancels the dialog, or enters the password wrong too many times,
+    // show the Access Restricted error message.
+    return response.status(401).send("Authorization Required");
+  } else {
+    // If the user enters a username and password, the browser re-requests the route
+    // and includes a Base64 string of those credentials.
+    var credentials = new Buffer(auth.split(" ").pop(), "base64").toString("ascii").split(":");
+    if (credentials[0] === "admin" && credentials[1] === "blah") {
+      // The username and password are correct, so the user is authorized.
+      if (fs.existsSync(folder + path)) {
     console.log("Found! Sending...")
     response.sendFile(folder + path, { root: __dirname })
   } else {
-    console.log("Not found. Sending null")
     response.send(null);
   }
+    } else {
+      // The user typed in the username or password wrong.
+      return response.status(403).send("Access Denied (incorrect credentials)");
+    }
+  }
+  
 });
 
 //they send the file, we store it
 app.put("*", function (request, response) {
   var path = folder + request.originalUrl;
-  console.log("Got a PUT request: " + path)
-  console.log("Content type: " + request.get("Content-Type"));
-  console.log("Putting:")
+  console.log("Got a PUT request: " + path);
   //we have to do some ugly stuff to get the buffer into a file. Brace yourself
   var buffer = request.body;
   ensureDirectoryExistence(path);
@@ -78,15 +98,7 @@ app.put("*", function (request, response) {
             response.sendStatus(200);
         })
     });
-});
-  fs.writeFile(path, request.body, function(err) {
-    if(err) {
-      console.log(err);
-      response.sendStatus(500);
-    } else {
-      
-    }
-  }); 
+  });
   
 });
 
