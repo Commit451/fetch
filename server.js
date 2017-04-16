@@ -21,6 +21,8 @@ passport.use(new Strategy(
   function(username, password, cb) {
     if (username == 'admin' && password == process.env.PASSWORD) {
       return cb(null, 'admin');
+    } else {
+      return cb(null, false);
     }
   }
 ));
@@ -32,6 +34,7 @@ app.use(bodyParser.raw());
 var folder = ".data";
 
 app.get("/", function (request, response) {
+  console.log("Sending default")
   response.status(200).send("Nothing to see here, check out <a href=\"https://github.com/Commit451/fetch\">https://github.com/Commit451/fetch</a> instead")
 });
 
@@ -59,45 +62,23 @@ app.post("/nuke", function (request, response) {
 });
 
 //they request the file, we send it
-app.get("*", 
+app.get("/maven*", 
         passport.authenticate('basic', { session: false }),
         function (request, response) {
   var path = request.originalUrl;
   console.log("Got a GET request: " + path);
-
-  //TODO change this to use Passport and have it do it on the PUT as well
-  // Grab the "Authorization" header.
-  var auth = request.get("authorization");
-
-  // On the first request, the "Authorization" header won't exist, so we'll set a Response
-  // header that prompts the browser to ask for a username and password.
-  if (!auth) {
-    response.set("WWW-Authenticate", "Basic realm=\"Authorization Required\"");
-    // If the user cancels the dialog, or enters the password wrong too many times,
-    // show the Access Restricted error message.
-    return response.status(401).send("Authorization Required");
-  } else {
-    // If the user enters a username and password, the browser re-requests the route
-    // and includes a Base64 string of those credentials.
-    var credentials = new Buffer(auth.split(" ").pop(), "base64").toString("ascii").split(":");
-    if (credentials[0] === "admin" && credentials[1] === "blah") {
-      // The username and password are correct, so the user is authorized.
-      if (fs.existsSync(folder + path)) {
+  
+  if (fs.existsSync(folder + path)) {
     console.log("Found! Sending...")
     response.sendFile(folder + path, { root: __dirname })
   } else {
     response.send(null);
   }
-    } else {
-      // The user typed in the username or password wrong.
-      return response.status(403).send("Access Denied (incorrect credentials)");
-    }
-  }
   
 });
 
 //they send the file, we store it
-app.put("*", 
+app.put("/maven*", 
         passport.authenticate('basic', { session: false }),
         function (request, response) {
   var path = folder + request.originalUrl;
