@@ -6,7 +6,24 @@ const fs = require('fs-extra')
 var path = require('path')
 var getSize = require('get-folder-size');
 var bodyParser = require('body-parser')
+var passport = require('passport');
+var Strategy = require('passport-http').BasicStrategy;
 var app = express();
+
+// Configure the Basic strategy for use by Passport.
+//
+// The Basic strategy requires a `verify` function which receives the
+// credentials (`username` and `password`) contained in the request.  The
+// function must verify that the password is correct and then invoke `cb` with
+// a user object, which will be set at `req.user` in route handlers after
+// authentication.
+passport.use(new Strategy(
+  function(username, password, cb) {
+    if (username == 'admin' && password == process.env.PASSWORD) {
+      return cb(null, 'admin');
+    }
+  }
+));
 
 //get bodies as buffers for octet-stream (wat)
 app.use(bodyParser.raw());
@@ -42,10 +59,13 @@ app.post("/nuke", function (request, response) {
 });
 
 //they request the file, we send it
-app.get("*", function (request, response) {
+app.get("*", 
+        passport.authenticate('basic', { session: false }),
+        function (request, response) {
   var path = request.originalUrl;
   console.log("Got a GET request: " + path);
-  
+
+  //TODO change this to use Passport and have it do it on the PUT as well
   // Grab the "Authorization" header.
   var auth = request.get("authorization");
 
@@ -77,7 +97,9 @@ app.get("*", function (request, response) {
 });
 
 //they send the file, we store it
-app.put("*", function (request, response) {
+app.put("*", 
+        passport.authenticate('basic', { session: false }),
+        function (request, response) {
   var path = folder + request.originalUrl;
   console.log("Got a PUT request: " + path);
   //we have to do some ugly stuff to get the buffer into a file. Brace yourself

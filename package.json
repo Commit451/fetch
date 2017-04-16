@@ -10,7 +10,9 @@
     "express": "^4.15.2",
     "body-parser": "^1.17.1",
     "get-folder-size": "^1.0.0",
-    "fs-extra": "^2.1.2"
+    "fs-extra": "^2.1.2",
+    "passport": "^0.3.2",
+    "passport-http": "^0.3.0"
   },
   "engines": {
     "node": "6.9.x"
