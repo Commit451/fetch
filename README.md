@@ -1,9 +1,12 @@
 # fetch
 
-Private maven servers are complicated or pricey. fetch aims to make them simple and free. All you need to do is remix this project on glitch.com and do a bit of configuration.
+[Remix on Glitch](https://glitch.com/~fetch)
+
+Private maven servers are complicated or pricey. fetch aims to make them simple and relatively free by storing artifacts on Dropbox. All you need to do is remix this project on glitch.com and do a bit of configuration.
 
 ## Configuration
-To make things private, you need to add a password to the `.env` file in Glitch. It'll look a little something like this:
+1. [Remix](https://glitch.com/~fetch) this projects on Glitch.com
+2. Add your desired password and your [Dropbox access token](https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account/) to the `.env` file in Glitch. It'll look a little something like this:
 ```
 # Environment Config
 
@@ -12,31 +15,26 @@ To make things private, you need to add a password to the `.env` file in Glitch.
 
 # reference these in your code with process.env.SECRET
 
-PASSWORD=blah
+PASSWORD=some_password_you_like
+DROPBOX_ACCESS_TOKEN=some_long_access_token_here
 
 # note: .env is a shell file so there can't be spaces around =
 ```
-Note that if you leave these blank, anyone will have read/write access to the maven artifacts.
 
 Now, within your Gradle project, you just need to configure a custom maven repo:
 ```
 maven {
   credentials {
       username 'admin'
-      password 'your_password'
+      password 'some_password_you_like'
   }
-  url "https://yourproject.glitch.me"
+  url "https://yourproject.glitch.me/maven"
 }
 ```
-We recommend moving the username, password, and url out of the project itself and into a `gradle.properties` file in your Gradle `HOME` directory.
+We recommend moving the username, password, and url out of the project itself and into a `gradle.properties` file in your home `.gradle` directory.
 
-## Limitataions
-glitch.com limits you to a max of 128 MB of files. You can check how many you are using by visiting `https://yourprojectname.glitch.me/data`
-
-## Extras
-Some extra commands. Beware!
-- GET https://yourprojectname.glitch.me/data - returns the amount of MB you are using
-- POST https://yourprojectname.glitch.me/nuke - removes all artifacts. EVERYTHING
+## Files
+Your files are stored in Dropbox, under the folder `Apps/the-name-of-your-app/maven`. You can make backups, modify and delete files, and access the whole of your maven server within this folder structure.
 
 Made with [glitch.com](https://glitch.com/)
 -----------------
