@@ -34,7 +34,7 @@ passport.use(new Strategy(
 app.use(bodyParser.raw());
 
 app.get("/", function (request, response) {
-  response.status(200).send("Nothing to see here, check out <a href=\"https://github.com/Commit451/fetch\">https://github.com/Commit451/fetch</a> instead")
+  response.status(200).send("Check out <a href=\"https://github.com/Commit451/fetch\">https://github.com/Commit451/fetch</a> to get started")
 });
 
 //they request the file, we send it
