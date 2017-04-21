@@ -1,6 +1,6 @@
 // server.js
 // the simplest of maven servers
-
+require('dotenv').config()
 var express = require('express');
 var bodyParser = require('body-parser');
 var passport = require('passport');
@@ -73,6 +73,9 @@ app.put("/maven*",
   });
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT || '3000', function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+var server = app.listen(process.env.PORT || '8080', function () {
+  console.log('Your app is listening on port ' + server.address().port);
 });
+
+//for the tests!
+module.exports = server

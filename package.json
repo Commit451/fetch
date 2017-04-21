@@ -4,7 +4,8 @@
   "description": "The simplest maven server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "mocha"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
@@ -13,6 +14,11 @@
     "express": "^4.15.2",
     "passport": "^0.3.2",
     "passport-http": "^0.3.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.2.0"
   },
   "engines": {
     "node": "6.9.x"
