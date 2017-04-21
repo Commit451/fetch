@@ -2,7 +2,7 @@
 
 [![Remix on Glitch](https://img.shields.io/badge/Remix%20On%20Glitch-fetch-blue.svg)](https://glitch.com/~fetch)
 
-Private maven servers are complicated or pricey. fetch aims to make them simple and relatively free by storing artifacts on Dropbox. All you need to do is remix this project on glitch.com and do a bit of configuration.
+Private maven servers are complicated or pricey. fetch aims to make them simple and relatively free by storing artifacts on [Dropbox](https://www.dropbox.com/). All you need to do is remix this project on glitch.com and do a bit of configuration.
 
 ## Setup
 1. [Remix](https://glitch.com/~fetch) this project on Glitch.com
