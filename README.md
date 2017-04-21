@@ -1,11 +1,11 @@
 # fetch
 
-[Remix on Glitch](https://glitch.com/~fetch)
+[![Remix on Glitch](https://img.shields.io/badge/Remix%20On%20Glitch-fetch-blue.svg)](https://glitch.com/~fetch)
 
 Private maven servers are complicated or pricey. fetch aims to make them simple and relatively free by storing artifacts on Dropbox. All you need to do is remix this project on glitch.com and do a bit of configuration.
 
-## Configuration
-1. [Remix](https://glitch.com/~fetch) this projects on Glitch.com
+## Setup
+1. [Remix](https://glitch.com/~fetch) this project on Glitch.com
 2. Add your desired password and your [Dropbox access token](https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account/) to the `.env` file in Glitch. It'll look a little something like this:
 ```
 # Environment Config
