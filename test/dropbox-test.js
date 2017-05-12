@@ -1,15 +1,15 @@
 process.env.NODE_ENV = 'test';
 
-var chai = require('chai');
-var chaiHttp = require('chai-http');
-var server = require('../server');
-var should = chai.should();
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const server = require('../server');
+const should = chai.should();
 
 chai.use(chaiHttp);
 
 /*
-* Test the /PUT route
-*/
+ * Test the /PUT route
+ */
 describe('/PUT dependency', () => {
     it('dependency', (done) => {
         chai.request(server)
@@ -25,8 +25,8 @@ describe('/PUT dependency', () => {
 });
 
 /*
-* Test the /GET route
-*/
+ * Test the /GET route
+ */
 describe('/GET dependency', () => {
     it('dependency', (done) => {
         chai.request(server)
