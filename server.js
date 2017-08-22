@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const Strategy = require('passport-http').BasicStrategy;
 const Dropbox = require('dropbox');
+const Message = require('./Message');
 
 const app = express();
 const dbx = new Dropbox({accessToken: process.env.DROPBOX_ACCESS_TOKEN});
@@ -31,7 +32,8 @@ passport.use(new Strategy(
 app.use(bodyParser.raw());
 
 app.get("/", function (request, response) {
-    response.status(200).send("Check out <a href=\"https://github.com/Commit451/fetch\">https://github.com/Commit451/fetch</a> to get started")
+    const body = new Message("Take a look at https://github.com/Commit451/fetch");
+    response.status(200).send(body)
 });
 
 app.get("/view*", passport.authenticate('basic', {session: false}), function (request, response) {
@@ -80,6 +82,8 @@ app.put("/maven*", passport.authenticate('basic', {session: false}), function (r
 
     dbx.filesUpload({path: path, contents: buffer, mode: 'overwrite'})
         .then(function (dbResponse) {
+            const body = {};
+            body['message'] = "Uploaded";
             response.sendStatus(200);
             console.log(dbResponse);
         })
@@ -96,14 +100,12 @@ const server = app.listen(process.env.PORT || '8080', function () {
 });
 
 function send404(response) {
-    const errorBody = {};
-    errorBody['error'] = "Not found";
+    const errorBody = new Message("Not found");
     response.status(404).send(errorBody);
 }
 
 function send500(response) {
-    const errorBody = {};
-    errorBody['error'] = "Server error";
+    const errorBody = new Message("Server error");
     response.status(500).send(errorBody);
 }
 
