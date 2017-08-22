@@ -41,11 +41,18 @@ app.get("/view*", passport.authenticate('basic', {session: false}), function (re
     dbx.filesListFolder({path: path})
         .then(function(res) {
             console.log(res);
-            response.status(200).send(res);
+            const filesAndFolders = [];
+            res.entries.forEach(function(entry) {
+                let fileOrFolder = {};
+                fileOrFolder['type'] = entry['.tag'];
+                fileOrFolder['name'] = entry['name'];
+                filesAndFolders.push(fileOrFolder);
+            });
+            response.status(200).send(filesAndFolders);
         })
         .catch(function(error) {
             console.error(error);
-            response.status(404).send();
+            send404(response)
         });
 });
 
@@ -60,7 +67,7 @@ app.get("/maven*", passport.authenticate('basic', {session: false}), function (r
         })
         .catch(function (error) {
             console.error(error);
-            response.status(404).send(null);
+            send404(response)
         });
 });
 
@@ -78,7 +85,7 @@ app.put("/maven*", passport.authenticate('basic', {session: false}), function (r
         })
         .catch(function (error) {
             console.error(error);
-            response.sendStatus(500);
+            send500(response)
         });
 
 });
@@ -87,6 +94,18 @@ app.put("/maven*", passport.authenticate('basic', {session: false}), function (r
 const server = app.listen(process.env.PORT || '8080', function () {
     console.log('Your app is listening on port ' + server.address().port);
 });
+
+function send404(response) {
+    const errorBody = {};
+    errorBody['error'] = "Not found";
+    response.status(404).send(errorBody);
+}
+
+function send500(response) {
+    const errorBody = {};
+    errorBody['error'] = "Server error";
+    response.status(500).send(errorBody);
+}
 
 //for the tests!
 module.exports = server;
