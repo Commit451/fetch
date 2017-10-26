@@ -5,11 +5,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const Strategy = require('passport-http').BasicStrategy;
-const Dropbox = require('dropbox');
 const Message = require('./Message');
+const firebase = require("firebase");
+require("firebase/firestore");
 
 const app = express();
-const dbx = new Dropbox({accessToken: process.env.DROPBOX_ACCESS_TOKEN});
+
+const config = {
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
+};
+firebase.initializeApp(config);
+
+// Get a reference to the database service
+const db = firebase.firestore();
 
 // Configure the Basic strategy for use by Passport.
 //
@@ -20,6 +31,12 @@ const dbx = new Dropbox({accessToken: process.env.DROPBOX_ACCESS_TOKEN});
 // authentication.
 passport.use(new Strategy(
     function (username, password, cb) {
+
+        db.collection("users").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                console.log(`${doc.id} => ${doc.data()}`);
+            });
+        });
         if (username === 'admin' && password === process.env.PASSWORD) {
             return cb(null, 'admin');
         } else {
@@ -40,37 +57,37 @@ app.get("/view*", passport.authenticate('basic', {session: false}), function (re
     let path = request.originalUrl;
     path = path.replace("view", "maven");
     console.log("Got a GET view request: " + path);
-    dbx.filesListFolder({path: path})
-        .then(function(res) {
-            console.log(res);
-            const filesAndFolders = [];
-            res.entries.forEach(function(entry) {
-                let fileOrFolder = {};
-                fileOrFolder['type'] = entry['.tag'];
-                fileOrFolder['name'] = entry['name'];
-                filesAndFolders.push(fileOrFolder);
-            });
-            response.status(200).send(filesAndFolders);
-        })
-        .catch(function(error) {
-            console.error(error);
-            send404(response)
-        });
+    // dbx.filesListFolder({path: path})
+    //     .then(function(res) {
+    //         console.log(res);
+    //         const filesAndFolders = [];
+    //         res.entries.forEach(function(entry) {
+    //             let fileOrFolder = {};
+    //             fileOrFolder['type'] = entry['.tag'];
+    //             fileOrFolder['name'] = entry['name'];
+    //             filesAndFolders.push(fileOrFolder);
+    //         });
+    //         response.status(200).send(filesAndFolders);
+    //     })
+    //     .catch(function(error) {
+    //         console.error(error);
+    //         send404(response)
+    //     });
 });
 
 //they request the file, we send it
 app.get("/maven*", passport.authenticate('basic', {session: false}), function (request, response) {
     const path = request.originalUrl;
     console.log("Got a GET request: " + path);
-    dbx.filesDownload({path: path})
-        .then(function (dbResponse) {
-            console.log(dbResponse);
-            response.status(200).send(dbResponse.fileBinary);
-        })
-        .catch(function (error) {
-            console.error(error);
-            send404(response)
-        });
+    // dbx.filesDownload({path: path})
+    //     .then(function (dbResponse) {
+    //         console.log(dbResponse);
+    //         response.status(200).send(dbResponse.fileBinary);
+    //     })
+    //     .catch(function (error) {
+    //         console.error(error);
+    //         send404(response)
+    //     });
 });
 
 //they send the file, we store it
@@ -80,18 +97,19 @@ app.put("/maven*", passport.authenticate('basic', {session: false}), function (r
 
     const buffer = request.body;
 
-    dbx.filesUpload({path: path, contents: buffer, mode: 'overwrite'})
-        .then(function (dbResponse) {
-            const body = {};
-            body['message'] = "Uploaded";
-            response.sendStatus(200);
-            console.log(dbResponse);
-        })
-        .catch(function (error) {
-            console.error(error);
-            send500(response)
-        });
+    // dbx.filesUpload({path: path, contents: buffer, mode: 'overwrite'})
+    //     .then(function (dbResponse) {
+    //         const body = {};
+    //         body['message'] = "Uploaded";
+    //         response.sendStatus(200);
+    //         console.log(dbResponse);
+    //     })
+    //     .catch(function (error) {
+    //         console.error(error);
+    //         send500(response)
+    //     });
 
+    //upload the file
 });
 
 // listen for requests :)

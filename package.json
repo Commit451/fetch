@@ -10,8 +10,8 @@
   "dependencies": {
     "body-parser": "^1.17.1",
     "dotenv": "^4.0.0",
-    "dropbox": "^2.5.2",
     "express": "^4.15.2",
+    "firebase": "^4.6.0",
     "passport": "^0.3.2",
     "passport-http": "^0.3.0"
   },
