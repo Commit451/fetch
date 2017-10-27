@@ -6,21 +6,20 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const Strategy = require('passport-http').BasicStrategy;
 const Message = require('./Message');
-const firebase = require("firebase");
-require("firebase/firestore");
+
+const admin = require("firebase-admin");
+
+const serviceAccount = require(__dirname + "/serviceAccountKey.json");
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://fetch-dat.firebaseio.com"
+});
+
+const db = admin.firestore();
+const usersRef = db.collection("users");
 
 const app = express();
-
-const config = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
-};
-firebase.initializeApp(config);
-
-// Get a reference to the database service
-const db = firebase.firestore();
 
 // Configure the Basic strategy for use by Passport.
 //
@@ -31,17 +30,28 @@ const db = firebase.firestore();
 // authentication.
 passport.use(new Strategy(
     function (username, password, cb) {
-
-        db.collection("users").get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                console.log(`${doc.id} => ${doc.data()}`);
+        console.log("challenge");
+        usersRef.where('username', '==', username).get()
+            .then(snapshot => {
+                if (snapshot.docs.length === 0) {
+                    console.log("no user found");
+                    return cb(null, false);
+                } else {
+                    const doc = snapshot.docs[0];
+                    let usersPassword = doc.data()['password'];
+                    console.log("Password: " + usersPassword);
+                    if (password === usersPassword) {
+                        console.log("user is authorized");
+                        return cb(null, 'admin');
+                    } else {
+                        return cb(null, false);
+                    }
+                }
+            })
+            .catch(err => {
+                console.log('Error getting documents', err);
+                return cb(null, false);
             });
-        });
-        if (username === 'admin' && password === process.env.PASSWORD) {
-            return cb(null, 'admin');
-        } else {
-            return cb(null, false);
-        }
     }
 ));
 
@@ -57,6 +67,8 @@ app.get("/view*", passport.authenticate('basic', {session: false}), function (re
     let path = request.originalUrl;
     path = path.replace("view", "maven");
     console.log("Got a GET view request: " + path);
+    const body = new Message("Take a look at https://github.com/Commit451/fetch");
+    response.status(200).send(body)
     // dbx.filesListFolder({path: path})
     //     .then(function(res) {
     //         console.log(res);
